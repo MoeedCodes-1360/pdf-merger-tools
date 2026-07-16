@@ -4,6 +4,7 @@ node_modules/
 # Uploaded files and generated PDFs
 uploads/
 public/merged.pdf
+*.pdf
 
 # Logs
 npm-debug.log*
