@@ -15,6 +15,110 @@
   <a class="navbar-brand" href="#">Pdftools</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
+    <style>
+      :root {
+        --ink: #17212b;
+        --muted: #687582;
+        --line: #dce4e8;
+        --accent: #0b7285;
+        --accent-dark: #075968;
+        --surface: #ffffff;
+        --background: #eef5f4;
+      }
+
+      body {
+        min-height: 100vh;
+        color: var(--ink);
+        background: linear-gradient(145deg, #eef5f4 0%, #f9f6ef 100%);
+        font-family: Georgia, 'Times New Roman', serif;
+      }
+
+      .navbar {
+        background: var(--surface) !important;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .navbar-brand {
+        color: var(--accent-dark) !important;
+        font-weight: 700;
+        letter-spacing: .04em;
+      }
+
+      .page-shell {
+        min-height: calc(100vh - 57px);
+        padding: 6rem 1rem 4rem;
+      }
+
+      .upload-panel {
+        width: min(100%, 680px);
+        padding: clamp(2rem, 5vw, 4rem);
+        background: rgba(255, 255, 255, .9);
+        border: 1px solid var(--line);
+        box-shadow: 0 18px 50px rgba(23, 33, 43, .1);
+      }
+
+      .eyebrow {
+        color: var(--accent);
+        font-family: Arial, sans-serif;
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: .5rem 0 .75rem;
+        font-size: clamp(2.2rem, 6vw, 4rem);
+      }
+
+      .intro {
+        color: var(--muted);
+        font-size: 1.05rem;
+      }
+
+      .file-drop {
+        margin-top: 2rem;
+        padding: 2rem 1.25rem;
+        text-align: center;
+        border: 2px dashed #a9c7c8;
+        background: #f7fbfa;
+      }
+
+      .file-drop label {
+        display: block;
+        margin: 0;
+        color: var(--accent-dark);
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .file-drop small,
+      #fileSummary {
+        color: var(--muted);
+        font-family: Arial, sans-serif;
+      }
+
+      #fileSummary {
+        min-height: 1.5rem;
+        margin-top: 1rem;
+        font-size: .9rem;
+      }
+
+      .btn-primary {
+        border-color: var(--accent);
+        background: var(--accent);
+      }
+
+      .btn-primary:hover,
+      .btn-primary:focus {
+        border-color: var(--accent-dark);
+        background: var(--accent-dark);
+      }
+
+      .btn-outline-secondary {
+        font-family: Arial, sans-serif;
+      }
+    </style>
   </button>
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav">
@@ -30,25 +134,70 @@
 <div class='d-flex justify-content-center align-items-center flex-column' style='height: 80vh;'>
     
     <h1>PDF Merger</h1>
-    <form action="/merge" method="post" enctype="multipart/form-data">
+    <form id="mergeForm" action="/merge" method="post" enctype="multipart/form-data">
   <div class="form-group" >
     <label for="exampleFormControlFile1" class="form-label font-weight-bold">Select the pdf files you want to merge</label>
-    <input name="pdfFiles" type="file" class="form-control-file" id="exampleFormControlFile1" accept=".pdf" multiple required>
-    <input type="submit" value="Submit" class="btn btn-primary mt-2 rounded-pill">
-  </div>
-</form>
-</div>
-    <!-- Optional JavaScript; choose one of the two! -->
+<main class="page-shell d-flex justify-content-center align-items-start">
+  <section class="upload-panel">
+    <div class="eyebrow">Document tools</div>
+    <h1>Merge your PDFs.</h1>
+    <p class="intro">Bring separate documents together into one clean, downloadable file.</p>
 
-    <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
-
+    <div id="errorMessage" class="alert alert-danger d-none" role="alert"></div>
+    <form action="/merge" method="post" enctype="multipart/form-data">
+      <div class="file-drop">
+        <label for="pdfFiles">Choose PDF files</label>
+        <small>Up to 12 files. Files are checked on the server.</small>
+        <input name="pdfFiles" type="file" class="form-control-file mt-3" id="pdfFiles" accept="application/pdf,.pdf" multiple required>
+        <div id="fileSummary" aria-live="polite">No files selected</div>
+      </div>
+      <div class="d-flex flex-wrap justify-content-between align-items-center mt-4">
+        <button type="button" id="clearFiles" class="btn btn-outline-secondary">Remove selected files</button>
+        <button type="submit" class="btn btn-primary px-4">Merge PDFs</button>
+      </div>
+    </form>
+  </section>
+</main>
     <!-- Option 2: Separate Popper and Bootstrap JS -->
     <!--
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous"></script>
+
+    <script>
+      const fileInput = document.getElementById('pdfFiles');
+      const fileSummary = document.getElementById('fileSummary');
+      const clearFiles = document.getElementById('clearFiles');
+      const errorMessage = document.getElementById('errorMessage');
+      const mergeForm = document.getElementById('mergeForm');
+
+      function updateFileSummary() {
+        const count = fileInput.files.length;
+        fileSummary.textContent = count === 0
+          ? 'No files selected'
+          : count + (count === 1 ? ' PDF selected' : ' PDFs selected');
+      }
+
+      fileInput.addEventListener('change', updateFileSummary);
+      mergeForm.addEventListener('submit', event => {
+        if (fileInput.files.length > 12) {
+          event.preventDefault();
+          errorMessage.textContent = 'Please remove some files. You can upload a maximum of 12 PDF files.';
+          errorMessage.classList.remove('d-none');
+        }
+      });
+
+      clearFiles.addEventListener('click', () => {
+        fileInput.value = '';
+        updateFileSummary();
+      });
+
+      const error = new URLSearchParams(window.location.search).get('error');
+      if (error) {
+        errorMessage.textContent = error;
+        errorMessage.classList.remove('d-none');
+      }
+    </script>
     -->
   </body>
 </html>
